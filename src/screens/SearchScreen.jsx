@@ -1,5 +1,5 @@
-// src/screens/SearchScreen.jsx
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../firebase';
 import { collection, query, where, getDocs, addDoc, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { getCurrentUser } from '../services/auth';
@@ -91,42 +91,71 @@ function SearchScreen() {
     }
 
     return (
-        <div className="flex flex-col items-center p-4 safe-area-inset-top">
-            <h1 className="text-4xl font-bold mb-6">Search</h1>
-            <div className="w-full max-w-md flex-grow">
-                <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="bg-gray-800 text-white px-4 py-2 rounded-lg mb-4 w-full text-center no-resize"
-                    placeholder="Search by nickname"
-                />
-                <button
-                    onClick={handleSearch}
-                    className="bg-gradient-violet text-white px-6 py-2 rounded-lg w-full mb-4"
-                >
-                    Search
-                </button>
-                {searchResult && (
-                    <div className="bg-gray-800 p-4 rounded-lg text-center">
-                        <p>{searchResult.nickname}</p>
-                        {!requestSent ? (
-                            <button
-                                onClick={sendFriendRequest}
-                                className="bg-gradient-violet text-white px-4 py-2 rounded-lg mt-2"
-                            >
-                                Send Friend Request
-                            </button>
-                        ) : (
-                            <button
-                                onClick={addFriend}
-                                className="bg-green-500 text-white px-4 py-2 rounded-lg mt-2"
-                            >
-                                Request Sent - Add Friend
-                            </button>
-                        )}
-                    </div>
-                )}
+        <div className="flex flex-col items-center p-4 safe-area-inset-top min-h-screen bg-black">
+            <motion.h1
+                className="text-4xl font-bold mb-6 text-center"
+                initial={{ opacity: 0, y: -50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, type: "spring" }}
+            >
+                memeow <span className="text-blue-400">〜</span>
+            </motion.h1>
+            <motion.div
+                className="w-full max-w-md bg-[#1a1a1a] p-4 rounded-xl border-4 border-white shadow-[0_0_10px_rgba(255,255,255,0.3)]"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+            >
+                <div className="flex items-center gap-2">
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="flex-1 bg-[#1a1a1a] text-white px-4 py-2 rounded-xl text-center no-resize border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Search by nickname"
+                    />
+                    <motion.button
+                        onClick={handleSearch}
+                        className="bg-gradient-to-r from-blue-600 to-blue-400 text-white px-4 py-2 rounded-xl font-medium"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
+                        Search
+                    </motion.button>
+                </div>
+            </motion.div>
+            <div className="w-full max-w-md flex-grow mt-4 max-h-[60vh] overflow-y-auto">
+                <AnimatePresence>
+                    {searchResult && (
+                        <motion.div
+                            className="bg-[#1a1a1a] p-4 rounded-xl border-4 border-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4 }}
+                        >
+                            <p className="text-base text-center">{searchResult.nickname}</p>
+                            {!requestSent ? (
+                                <motion.button
+                                    onClick={sendFriendRequest}
+                                    className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-4 py-2 rounded-xl mt-2 w-full font-medium"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    Send Friend Request
+                                </motion.button>
+                            ) : (
+                                <motion.button
+                                    onClick={addFriend}
+                                    className="bg-green-500 text-white px-4 py-2 rounded-xl mt-2 w-full font-medium"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    Request Sent - Add Friend
+                                </motion.button>
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );

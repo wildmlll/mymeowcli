@@ -23,7 +23,7 @@ body {
 }
 
 button {
-  @apply rounded-lg font-medium transition-all duration-200;
+  @apply rounded-xl font-medium transition-all duration-200;
 }
 
 a {
@@ -31,8 +31,8 @@ a {
 }
 
 @layer utilities {
-  .text-gradient-violet {
-    background: linear-gradient(to right, #8B5CF6, #3B82F6);
+  .text-gradient-blue {
+    background: linear-gradient(to right, #3b82f6, #60a5fa);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -56,7 +56,7 @@ a {
   }
 
   .auth-button {
-    @apply bg-white text-black px-8 py-3 rounded-full shadow-lg flex items-center justify-center text-base;
+    @apply bg-gradient-to-r from-blue-600 to-blue-400 text-white px-8 py-3 rounded-full shadow-lg flex items-center justify-center text-base;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   }
 
@@ -75,19 +75,19 @@ a {
   }
 
   .nickname-input {
-    @apply bg-gray-800 text-white px-4 py-3 rounded-lg w-72 text-center border border-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all duration-200;
+    @apply bg-[#1a1a1a] text-white px-4 py-3 rounded-xl w-72 text-center border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200;
   }
 
   .nickname-button {
-    @apply px-6 py-2 rounded-lg font-medium text-white transition-all duration-200;
+    @apply px-6 py-2 rounded-xl font-medium text-white transition-all duration-200;
   }
 
   .nickname-button-primary {
-    @apply bg-gradient-violet;
+    @apply bg-gradient-to-r from-blue-600 to-blue-400;
   }
 
   .nickname-button-primary:hover {
-    @apply bg-gradient-to-r from-violet-600 to-blue-600;
+    @apply bg-gradient-to-r from-blue-700 to-blue-500;
   }
 
   .nickname-button-disabled {
@@ -106,24 +106,16 @@ a {
     resize: none;
   }
 
-  .animate-bounce-dot1 {
-    animation: bounce 1.2s infinite;
+  .animate-spin-wave {
+    animation: spin 1s linear infinite;
   }
 
-  .animate-bounce-dot2 {
-    animation: bounce 1.2s infinite 0.2s;
-  }
-
-  .animate-bounce-dot3 {
-    animation: bounce 1.2s infinite 0.4s;
-  }
-
-  @keyframes bounce {
-    0%, 100% {
-      transform: translateY(0);
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
     }
-    50% {
-      transform: translateY(-8px);
+    to {
+      transform: rotate(360deg);
     }
   }
 }

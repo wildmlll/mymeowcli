@@ -1,5 +1,5 @@
-// src/screens/NicknameSelection.jsx
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { db } from '../firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import LoadingScreen from './LoadingScreen';
@@ -46,7 +46,14 @@ function NicknameSelection({ user, setScreen }) {
 
     return (
         <div className="nickname-container">
-            <h1 className="nickname-heading">Choose Nickname</h1>
+            <motion.h1
+                className="nickname-heading"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, type: "spring" }}
+            >
+                Choose Nickname <span className="text-blue-400">〜</span>
+            </motion.h1>
             <input
                 type="text"
                 value={nickname}
@@ -54,33 +61,48 @@ function NicknameSelection({ user, setScreen }) {
                 className="nickname-input no-resize"
                 placeholder="Enter nickname"
             />
-            <button
+            <motion.button
                 onClick={checkNickname}
                 className={`nickname-button nickname-button-primary mt-4 ${
                     (isChecking || !nickname) && 'nickname-button-disabled'
                 }`}
                 disabled={isChecking || !nickname}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
             >
                 {isChecking ? 'Checking...' : 'Check Nickname'}
-            </button>
+            </motion.button>
             {isAvailable === false && (
-                <button
+                <motion.button
                     className="nickname-button nickname-button-disabled mt-3"
                     disabled
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
                 >
                     Nickname Taken
-                </button>
+                </motion.button>
             )}
             {isAvailable === true && (
-                <button
+                <motion.button
                     onClick={saveNickname}
                     className="nickname-button nickname-button-success mt-3"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
                 >
                     Save Nickname
-                </button>
+                </motion.button>
             )}
             {error && (
-                <p className="text-red-500 mt-4 text-center">{error}</p>
+                <motion.p
+                    className="text-red-500 mt-4 text-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    {error}
+                </motion.p>
             )}
         </div>
     );

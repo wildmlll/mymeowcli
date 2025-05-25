@@ -1,4 +1,3 @@
-// src/App.jsx
 import { useState } from 'react';
 import AuthHandler from './screens/AuthHandler';
 import HomeScreen from './screens/HomeScreen';
@@ -25,7 +24,7 @@ function App() {
     };
 
     return (
-        <div className="flex flex-col w-full bg-black">
+        <div className="flex flex-col w-full min-h-screen bg-black">
             <div className="flex-grow">
                 {renderScreen()}
             </div>
