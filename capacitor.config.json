@@ -1,0 +1,15 @@
+{
+  "appId": "com.pmll.memeow",
+  "appName": "mymeow",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    },
+    "FirebaseAuthentication": {
+      "skipNativeAuth": false,
+      "providers": ["apple.com"]
+    }
+  }
+}

@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-black text-white;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  height: 100vh;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow-y: hidden;
+  touch-action: none;
+}
+
+#root {
+  @apply flex flex-col w-full;
+  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+}
+
+button {
+  @apply rounded-lg font-medium transition-all duration-200;
+}
+
+a {
+  @apply text-white no-underline;
+}
+
+@layer utilities {
+  .text-gradient-violet {
+    background: linear-gradient(to right, #8B5CF6, #3B82F6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .auth-container {
+    @apply flex flex-col items-center justify-center w-full h-full;
+    min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+
+  .auth-heading {
+    @apply text-5xl font-bold mb-8 tracking-tight;
+  }
+
+  .auth-button {
+    @apply bg-white text-black px-8 py-3 rounded-full shadow-lg flex items-center justify-center text-base;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+
+  .auth-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+  }
+
+  .nickname-container {
+    @apply flex flex-col items-center justify-center w-full;
+    height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+
+  .nickname-heading {
+    @apply text-4xl font-bold mb-6 tracking-tight;
+  }
+
+  .nickname-input {
+    @apply bg-gray-800 text-white px-4 py-3 rounded-lg w-72 text-center border border-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all duration-200;
+  }
+
+  .nickname-button {
+    @apply px-6 py-2 rounded-lg font-medium text-white transition-all duration-200;
+  }
+
+  .nickname-button-primary {
+    @apply bg-gradient-violet;
+  }
+
+  .nickname-button-primary:hover {
+    @apply bg-gradient-to-r from-violet-600 to-blue-600;
+  }
+
+  .nickname-button-disabled {
+    @apply bg-gray-600 opacity-50 cursor-not-allowed;
+  }
+
+  .nickname-button-success {
+    @apply bg-green-500;
+  }
+
+  .nickname-button-success:hover {
+    @apply bg-green-600;
+  }
+
+  .no-resize {
+    resize: none;
+  }
+
+  .animate-bounce-dot1 {
+    animation: bounce 1.2s infinite;
+  }
+
+  .animate-bounce-dot2 {
+    animation: bounce 1.2s infinite 0.2s;
+  }
+
+  .animate-bounce-dot3 {
+    animation: bounce 1.2s infinite 0.4s;
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-heading {
+    @apply text-4xl;
+  }
+
+  .auth-button {
+    @apply px-6 py-2 text-sm;
+  }
+
+  .nickname-heading {
+    @apply text-3xl;
+  }
+
+  .nickname-input {
+    @apply w-64 py-2;
+  }
+
+  .nickname-button {
+    @apply px-4 py-2 text-sm;
+  }
+
+  .max-w-md {
+    @apply max-w-full px-4;
+  }
+}
