@@ -10,12 +10,12 @@ function NavigationMenu({ setScreen, currentScreen }) {
                 Home
             </button>
             <button
-                onClick={() => setScreen('search')}
+                onClick={() => setScreen('friends')}
                 className={`flex-1 py-2 rounded-xl text-center ${
-                    currentScreen === 'search' ? 'bg-gradient-to-r from-blue-600 to-blue-400' : 'bg-gray-700'
+                    currentScreen === 'friends' ? 'bg-gradient-to-r from-blue-600 to-blue-400' : 'bg-gray-700'
                 } mx-1 text-sm font-medium`}
             >
-                Search
+                Friends
             </button>
             <button
                 onClick={() => setScreen('profile')}

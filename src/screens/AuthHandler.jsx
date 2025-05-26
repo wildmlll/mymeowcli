@@ -1,9 +1,8 @@
-// src/screens/AuthHandler.jsx
 import { useEffect, useState } from 'react';
 import { signInWithApple, getCurrentUser } from '../services/auth';
 import NicknameSelection from './NicknameSelection';
 import LoadingScreen from './LoadingScreen';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
 function AuthHandler({ setScreen }) {
@@ -18,10 +17,29 @@ function AuthHandler({ setScreen }) {
                 const currentUser = await getCurrentUser();
                 if (currentUser) {
                     setUser(currentUser);
-                    const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-                    if (userDoc.exists() && userDoc.data().nickname) {
-                        setHasNickname(true);
-                        setScreen('home');
+                    const userDocRef = doc(db, 'users', currentUser.uid);
+                    const userDoc = await getDoc(userDocRef);
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        // Initialize required fields if they don't exist
+                        const updates = {};
+                        if (!userData.friends) updates.friends = [];
+                        if (!userData.friendRequestsSent) updates.friendRequestsSent = [];
+                        if (!userData.friendRequestsReceived) updates.friendRequestsReceived = [];
+                        if (Object.keys(updates).length > 0) {
+                            await setDoc(userDocRef, updates, { merge: true });
+                        }
+                        if (userData.nickname) {
+                            setHasNickname(true);
+                            setScreen('home');
+                        }
+                    } else {
+                        // New user, initialize document
+                        await setDoc(userDocRef, {
+                            friends: [],
+                            friendRequestsSent: [],
+                            friendRequestsReceived: [],
+                        });
                     }
                 }
             } catch (err) {
@@ -39,10 +57,29 @@ function AuthHandler({ setScreen }) {
             setIsCheckingNickname(true);
             const signedInUser = await signInWithApple();
             setUser(signedInUser);
-            const userDoc = await getDoc(doc(db, 'users', signedInUser.uid));
-            if (userDoc.exists() && userDoc.data().nickname) {
-                setHasNickname(true);
-                setScreen('home');
+            const userDocRef = doc(db, 'users', signedInUser.uid);
+            const userDoc = await getDoc(userDocRef);
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                // Initialize required fields if they don't exist
+                const updates = {};
+                if (!userData.friends) updates.friends = [];
+                if (!userData.friendRequestsSent) updates.friendsRequestsSent = [];
+                if (!userData.friendRequestsReceived) updates.friendRequestsReceived = [];
+                if (Object.keys(updates).length > 0) {
+                    await setDoc(userDocRef, updates, { merge: true });
+                }
+                if (userData.nickname) {
+                    setHasNickname(true);
+                    setScreen('home');
+                }
+            } else {
+                // New user, initialize document
+                await setDoc(userDocRef, {
+                    friends: [],
+                    friendRequestsSent: [],
+                    friendRequestsReceived: [],
+                });
             }
         } catch (error) {
             setError('Failed to sign in with Apple. Please try again.');

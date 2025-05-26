@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import Countdown from 'react-countdown';
 
-function Note({ note }) {
+function Note({ note, onNicknameClick }) {
     const expirationTime = new Date(note.createdAt.getTime() + 6 * 60 * 60 * 1000);
     return (
         <motion.div
@@ -11,7 +11,12 @@ function Note({ note }) {
             transition={{ duration: 0.3 }}
         >
             <p className="text-base text-center">{note.text}</p>
-            <p className="text-sm text-gray-400 text-center">{note.nickname}</p>
+            <p
+                className="text-sm text-gray-400 text-center cursor-pointer"
+                onClick={() => onNicknameClick(note.ownerId)}
+            >
+                {note.nickname}
+            </p>
             <Countdown date={expirationTime} className="text-sm text-gray-400 text-center" />
         </motion.div>
     );

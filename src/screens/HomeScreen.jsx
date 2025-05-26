@@ -7,7 +7,7 @@ import Note from '../components/Note';
 import LoadingScreen from './LoadingScreen';
 import Countdown from 'react-countdown';
 
-function HomeScreen() {
+function HomeScreen({ setScreen, setSelectedUserId }) {
     const [notes, setNotes] = useState([]);
     const [user, setUser] = useState(null);
     const [newNote, setNewNote] = useState('');
@@ -128,6 +128,15 @@ function HomeScreen() {
         }
     };
 
+    const handleNicknameClick = (ownerId) => {
+        if (ownerId === user.uid) {
+            setScreen('profile');
+        } else {
+            setSelectedUserId(ownerId);
+            setScreen('userProfile');
+        }
+    };
+
     if (isLoading) {
         return <LoadingScreen />;
     }
@@ -197,12 +206,12 @@ function HomeScreen() {
                             transition={{ duration: 0.3 }}
                         >
                             <h2 className="text-lg font-semibold text-center mb-2">Your Active Note</h2>
-                            <Note note={activeNote} />
+                            <Note note={activeNote} onNicknameClick={handleNicknameClick} />
                         </motion.div>
                     )}
                     {notes.length > 0 ? (
                         notes.map(note => (
-                            <Note key={note.id} note={note} />
+                            <Note key={note.id} note={note} onNicknameClick={handleNicknameClick} />
                         ))
                     ) : (
                         <motion.p

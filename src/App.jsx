@@ -2,11 +2,14 @@ import { useState } from 'react';
 import AuthHandler from './screens/AuthHandler';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/ProfileScreen';
-import SearchScreen from './screens/SearchScreen';
+import FriendsScreen from './screens/FriendsScreen';
+import UserProfileScreen from './screens/UserProfileScreen';
+import FriendsListScreen from './screens/FriendsListScreen';
 import NavigationMenu from './components/NavigationMenu';
 
 function App() {
     const [currentScreen, setCurrentScreen] = useState('auth');
+    const [selectedUserId, setSelectedUserId] = useState(null);
 
     const renderScreen = () => {
         switch (currentScreen) {
@@ -15,9 +18,13 @@ function App() {
             case 'home':
                 return <HomeScreen />;
             case 'profile':
-                return <ProfileScreen />;
-            case 'search':
-                return <SearchScreen />;
+                return <ProfileScreen setScreen={setCurrentScreen} />;
+            case 'friends':
+                return <FriendsScreen setSelectedUserId={setSelectedUserId} setScreen={setCurrentScreen} />;
+            case 'userProfile':
+                return <UserProfileScreen userId={selectedUserId} setScreen={setCurrentScreen} />;
+            case 'friendsList':
+                return <FriendsListScreen setSelectedUserId={setSelectedUserId} setScreen={setCurrentScreen} />;
             default:
                 return <AuthHandler setScreen={setCurrentScreen} />;
         }
@@ -28,7 +35,7 @@ function App() {
             <div className="flex-grow">
                 {renderScreen()}
             </div>
-            {currentScreen !== 'auth' && (
+            {currentScreen !== 'auth' && currentScreen !== 'userProfile' && currentScreen !== 'friendsList' && (
                 <NavigationMenu setScreen={setCurrentScreen} currentScreen={currentScreen} />
             )}
         </div>
