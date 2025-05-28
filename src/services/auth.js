@@ -13,6 +13,18 @@ export const signInWithApple = async () => {
         throw error; // Re-throw to handle in the calling component
     }
 };
+export const signInWithGoogle = async () => {
+    try {
+        const result = await FirebaseAuthentication.signInWithGoogle();
+        if (!result.user) {
+            throw new Error('Sign in with Apple failed: No user returned');
+        }
+        return result.user;
+    } catch (error) {
+        console.error('Sign in with Apple error:', error);
+        throw error; // Re-throw to handle in the calling component
+    }
+};
 
 export const signOut = async () => {
     await FirebaseAuthentication.signOut();

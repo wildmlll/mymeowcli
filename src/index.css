@@ -55,8 +55,12 @@ a {
     @apply text-5xl font-bold mb-8 tracking-tight;
   }
 
-  .auth-button {
+  .auth-buttona {
     @apply bg-gradient-to-r from-blue-600 to-blue-400 text-white px-8 py-3 rounded-full shadow-lg flex items-center justify-center text-base;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+  .auth-buttong {
+    @apply bg-gradient-to-r from-violet-600 to-violet-400 text-white px-8 py-3 rounded-full shadow-lg flex items-center justify-center text-base;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   }
 

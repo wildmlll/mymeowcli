@@ -60,6 +60,7 @@ function NicknameSelection({ user, setScreen }) {
                     friendRequestsSent: []
                 }, { merge: true });
                 setScreen('home');
+                window.location.reload();
             } catch (err) {
                 console.error('Error saving nickname and avatar:', err);
                 setError(`Failed to save nickname and avatar. ${err.message}. Check Firebase Storage rules or contact support if persistent.`);
@@ -85,12 +86,12 @@ function NicknameSelection({ user, setScreen }) {
                 type="text"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
-                className="w-full max-w-md p-2 mb-4 rounded-xl bg-[#1a1a1a] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-[75%] max-w-md p-2 mb-4 rounded-xl bg-[#1a1a1a] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter nickname"
             />
             <motion.button
                 onClick={checkNickname}
-                className="w-full max-w-md bg-gradient-to-r from-blue-600 to-blue-400 text-white px-6 py-2 rounded-xl font-medium mb-4"
+                className="w-[75%] max-w-md bg-gradient-to-r from-blue-600 to-blue-400 text-white px-6 py-2 rounded-xl font-medium mb-4"
                 disabled={isChecking || !nickname}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -125,8 +126,15 @@ function NicknameSelection({ user, setScreen }) {
                         className="hidden"
                         id="avatar-upload"
                     />
-                    <label htmlFor="avatar-upload" className="w-16 h-16 rounded-full bg-gray-600 flex items-center justify-center text-white cursor-pointer mb-4">
-                        {avatar ? '✓' : 'Upload Avatar'}
+                    <label
+                        htmlFor="avatar-upload"
+                        className="w-16 h-16 rounded-full bg-gray-600 flex items-center justify-center text-white text-center text-xs font-medium cursor-pointer mb-4 overflow-hidden"
+                    >
+                        {avatar ? (
+                            <span className="text-lg">✓</span>
+                        ) : (
+                            <span className="px-1">Upload Avatar</span>
+                        )}
                     </label>
                     <motion.button
                         onClick={saveNicknameAndAvatar}
