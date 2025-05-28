@@ -21,7 +21,6 @@ function AuthHandler({ setScreen }) {
                     const userDoc = await getDoc(userDocRef);
                     if (userDoc.exists()) {
                         const userData = userDoc.data();
-                        // Initialize required fields if they don't exist
                         const updates = {};
                         if (!userData.friends) updates.friends = [];
                         if (!userData.friendRequestsSent) updates.friendRequestsSent = [];
@@ -34,7 +33,6 @@ function AuthHandler({ setScreen }) {
                             setScreen('home');
                         }
                     } else {
-                        // New user, initialize document
                         await setDoc(userDocRef, {
                             friends: [],
                             friendRequestsSent: [],
@@ -61,10 +59,9 @@ function AuthHandler({ setScreen }) {
             const userDoc = await getDoc(userDocRef);
             if (userDoc.exists()) {
                 const userData = userDoc.data();
-                // Initialize required fields if they don't exist
                 const updates = {};
                 if (!userData.friends) updates.friends = [];
-                if (!userData.friendRequestsSent) updates.friendsRequestsSent = [];
+                if (!userData.friendRequestsSent) updates.friendRequestsSent = [];
                 if (!userData.friendRequestsReceived) updates.friendRequestsReceived = [];
                 if (Object.keys(updates).length > 0) {
                     await setDoc(userDocRef, updates, { merge: true });
@@ -74,7 +71,6 @@ function AuthHandler({ setScreen }) {
                     setScreen('home');
                 }
             } else {
-                // New user, initialize document
                 await setDoc(userDocRef, {
                     friends: [],
                     friendRequestsSent: [],
@@ -97,7 +93,7 @@ function AuthHandler({ setScreen }) {
         return (
             <div className="auth-container">
                 <h1 className="auth-heading flex items-center">
-                    memeow
+                    mymeow
                     <span className="ml-2 text-gradient-violet">~</span>
                 </h1>
                 <button

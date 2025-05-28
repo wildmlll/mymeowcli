@@ -8,8 +8,9 @@ import LoadingScreen from './LoadingScreen';
 function FriendsScreen({ setSelectedUserId, setScreen }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResult, setSearchResult] = useState(null);
-    const [requestStatus, setRequestStatus] = useState('none'); // 'none', 'sent', 'received', 'friends'
+    const [requestStatus, setRequestStatus] = useState('none');
     const [incomingRequests, setIncomingRequests] = useState([]);
+    const [friendsList, setFriendsList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
@@ -26,7 +27,6 @@ function FriendsScreen({ setSelectedUserId, setScreen }) {
                 if (!userDoc.exists()) throw new Error('User data not found');
                 const userData = userDoc.data();
 
-                // Fetch incoming friend requests
                 const requests = userData.friendRequestsReceived || [];
                 const requestDetails = await Promise.all(
                     requests.map(async (uid) => {
@@ -35,6 +35,15 @@ function FriendsScreen({ setSelectedUserId, setScreen }) {
                     })
                 );
                 setIncomingRequests(requestDetails.filter(Boolean));
+
+                const friends = userData.friends || [];
+                const friendsDetails = await Promise.all(
+                    friends.map(async (friendId) => {
+                        const friendDoc = await getDoc(doc(db, 'users', friendId));
+                        return friendDoc.exists() ? { id: friendId, ...friendDoc.data() } : null;
+                    })
+                );
+                setFriendsList(friendsDetails.filter(Boolean));
             } catch (err) {
                 console.error('Error fetching data:', err);
                 setError('Failed to load data. Please try again.');
@@ -56,7 +65,6 @@ function FriendsScreen({ setSelectedUserId, setScreen }) {
                 const userDoc = await getDoc(doc(db, 'users', userId));
                 const userData = userDoc.data();
 
-                // Check relationship status
                 const currentUserDoc = await getDoc(doc(db, 'users', currentUser.uid));
                 const currentUserData = currentUserDoc.data();
                 if (userId === currentUser.uid) {
@@ -115,9 +123,8 @@ function FriendsScreen({ setSelectedUserId, setScreen }) {
                 friendRequestsSent: arrayRemove(currentUser.uid),
             });
             setIncomingRequests(incomingRequests.filter(req => req.id !== requesterId));
-            if (searchResult?.id === requesterId) {
-                setRequestStatus('friends');
-            }
+            if (searchResult?.id === requesterId) setRequestStatus('friends');
+            setFriendsList(prev => [...prev, incomingRequests.find(req => req.id === requesterId)].filter(Boolean));
         } catch (err) {
             console.error('Error accepting friend request:', err);
             setError('Failed to accept friend request. Please try again.');
@@ -137,9 +144,7 @@ function FriendsScreen({ setSelectedUserId, setScreen }) {
                 friendRequestsSent: arrayRemove(currentUser.uid),
             });
             setIncomingRequests(incomingRequests.filter(req => req.id !== requesterId));
-            if (searchResult?.id === requesterId) {
-                setRequestStatus('none');
-            }
+            if (searchResult?.id === requesterId) setRequestStatus('none');
         } catch (err) {
             console.error('Error declining friend request:', err);
             setError('Failed to decline friend request. Please try again.');
@@ -161,20 +166,101 @@ function FriendsScreen({ setSelectedUserId, setScreen }) {
     );
 
     return (
-        <div className="flex flex-col items-center p-4 safe-area-inset-top min-h-screen bg-black">
-            <motion.h1
-                className="text-4xl font-bold mb-6 text-center"
+        <div className="flex flex-col items-center p-4 safe-area-inset-top min-h-screen bg-black pt-0">
+            <motion.div
+                className="fixed top-0 left-0 w-full bg-black z-10 pt-16"
                 initial={{ opacity: 0, y: -50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, type: "spring" }}
             >
-                memeow <span className="text-blue-400">〜</span>
-            </motion.h1>
-
-            {/* Incoming Friend Requests */}
+                <h1 className="text-4xl font-bold text-center">
+                    mymeow <span className="text-blue-400">〜</span>
+                </h1>
+            </motion.div>
+            <motion.div
+                className="w-full max-w-md p-4 mb-4 pt-15"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <div className=" flex items-center gap-2 mb-3">
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="flex-1 bg-transparent text-white px-4 py-2 rounded-xl text-center border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        style={{ width: 'calc(100% - 80px)', marginLeft: '0' }}
+                        placeholder="Search by nickname"
+                    />
+                    <motion.button
+                        onClick={handleSearch}
+                        className="bg-gradient-to-r from-blue-600 to-blue-400 text-white px-4 py-2 rounded-xl font-medium"
+                        style={{ marginRight: '0' }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
+                        Search
+                    </motion.button>
+                </div>
+                {searchResult && (
+                    <motion.div
+                        className="border-2 border-blue-500 p-4 rounded-xl shadow-[0_0_10px_rgba(59,130,246,0.5)] mt-2"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4 }}
+                    >
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                                {searchResult.avatarUrl && (
+                                    <img src={searchResult.avatarUrl} alt="Avatar" className="w-8 h-8 rounded-full mr-2" />
+                                )}
+                                <p className="text-base cursor-pointer" onClick={() => viewProfile(searchResult.id)}>
+                                    {searchResult.nickname}
+                                </p>
+                            </div>
+                            {requestStatus === 'none' && (
+                                <motion.button
+                                    onClick={sendFriendRequest}
+                                    className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-4 py-2 rounded-xl font-medium"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    Send Friend Request
+                                </motion.button>
+                            )}
+                            {requestStatus === 'sent' && (
+                                <motion.button
+                                    className="bg-gray-500 text-white px-4 py-2 rounded-xl font-medium opacity-50 cursor-not-allowed"
+                                    disabled
+                                >
+                                    Request Sent
+                                </motion.button>
+                            )}
+                            {requestStatus === 'received' && (
+                                <motion.button
+                                    onClick={() => acceptFriendRequest(searchResult.id)}
+                                    className="bg-green-500 text-white px-4 py-2 rounded-xl font-medium"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    Accept Request
+                                </motion.button>
+                            )}
+                            {requestStatus === 'friends' && (
+                                <motion.button
+                                    className="bg-green-500 text-white px-4 py-2 rounded-xl font-medium opacity-50 cursor-not-allowed"
+                                    disabled
+                                >
+                                    Friends
+                                </motion.button>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+            </motion.div>
             {incomingRequests.length > 0 && (
                 <motion.div
-                    className="w-full max-w-md bg-[#1a1a1a] p-4 rounded-xl border-4 border-white shadow-[0_0_10px_rgba(255,255,255,0.3)] mb-4"
+                    className="w-full max-w-md border-2 border-white p-4 rounded-xl shadow-[0_0_10px_rgba(255,255,255,0.3)] mb-4"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5 }}
@@ -184,146 +270,73 @@ function FriendsScreen({ setSelectedUserId, setScreen }) {
                         {incomingRequests.map(request => (
                             <motion.div
                                 key={request.id}
-                                className="bg-[#2a2a2a] p-3 rounded-xl mb-2"
+                                className="border-2 border-gray-600 p-3 rounded-xl mb-2 flex items-center justify-between"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -20 }}
                                 transition={{ duration: 0.3 }}
                             >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        {request.avatarUrl && (
-                                            <img
-                                                src={request.avatarUrl}
-                                                alt="Avatar"
-                                                className="w-8 h-8 rounded-full mr-2"
-                                            />
-                                        )}
-                                        <p
-                                            className="text-base cursor-pointer"
-                                            onClick={() => viewProfile(request.id)}
-                                        >
-                                            {request.nickname}
-                                        </p>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <motion.button
-                                            onClick={() => acceptFriendRequest(request.id)}
-                                            className="bg-green-500 text-white px-3 py-1 rounded-xl font-medium"
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
-                                        >
-                                            Accept
-                                        </motion.button>
-                                        <motion.button
-                                            onClick={() => declineFriendRequest(request.id)}
-                                            className="bg-red-500 text-white px-3 py-1 rounded-xl font-medium"
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
-                                        >
-                                            Decline
-                                        </motion.button>
-                                    </div>
+                                <div className="flex items-center">
+                                    {request.avatarUrl && (
+                                        <img src={request.avatarUrl} alt="Avatar" className="w-8 h-8 rounded-full mr-2" />
+                                    )}
+                                    <p className="text-base cursor-pointer" onClick={() => viewProfile(request.id)}>
+                                        {request.nickname}
+                                    </p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <motion.button
+                                        onClick={() => acceptFriendRequest(request.id)}
+                                        className="bg-green-500 text-white px-3 py-1 rounded-xl font-medium"
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                    >
+                                        Accept
+                                    </motion.button>
+                                    <motion.button
+                                        onClick={() => declineFriendRequest(request.id)}
+                                        className="bg-red-500 text-white px-3 py-1 rounded-xl font-medium"
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                    >
+                                        Decline
+                                    </motion.button>
                                 </div>
                             </motion.div>
                         ))}
                     </AnimatePresence>
                 </motion.div>
             )}
+            {friendsList.length > 0 && (
+                <motion.div
+                    className="w-full max-w-md border-2 border-white p-4 rounded-xl shadow-[0_0_10px_rgba(255,255,255,0.3)]"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <h2 className="text-xl font-bold mb-2">Friends</h2>
+                    <AnimatePresence>
+                        {friendsList.map(friend => (
+                            <motion.div
+                                key={friend.id}
+                                className="border-2 border-gray-600 p-3 rounded-xl mb-2 flex items-center"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                {friend.avatarUrl && (
+                                    <img src={friend.avatarUrl} alt="Avatar" className="w-8 h-8 rounded-full mr-2" />
+                                )}
+                                <p className="text-base cursor-pointer" onClick={() => viewProfile(friend.id)}>
+                                    {friend.nickname}
+                                </p>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </motion.div>
+            )}
 
-            {/* Search Section */}
-            <motion.div
-                className="w-full max-w-md bg-[#1a1a1a] p-4 rounded-xl border-4 border-white shadow-[0_0_10px_rgba(255,255,255,0.3)]"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-            >
-                <div className="flex items-center gap-2">
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="flex-1 bg-[#1a1a1a] text-white px-4 py-2 Rounding-xl text-center no-resize border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Search by nickname"
-                    />
-                    <motion.button
-                        onClick={handleSearch}
-                        className="bg-gradient-to-r from-blue-600 to-blue-400 text-white px-4 py-2 rounded-xl font-medium"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                    >
-                        Search
-                    </motion.button>
-                </div>
-            </motion.div>
-
-            {/* Search Results */}
-            <div className="w-full max-w-md flex-grow mt-4 max-h-[60vh] overflow-y-auto">
-                <AnimatePresence>
-                    {searchResult && (
-                        <motion.div
-                            className="bg-[#1a1a1a] p-4 rounded-xl border-4 border-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4 }}
-                        >
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                    {searchResult.avatarUrl && (
-                                        <img
-                                            src={searchResult.avatarUrl}
-                                            alt="Avatar"
-                                            className="w-8 h-8 rounded-full mr-2"
-                                        />
-                                    )}
-                                    <p
-                                        className="text-base cursor-pointer"
-                                        onClick={() => viewProfile(searchResult.id)}
-                                    >
-                                        {searchResult.nickname}
-                                    </p>
-                                </div>
-                                {requestStatus === 'none' && (
-                                    <motion.button
-                                        onClick={sendFriendRequest}
-                                        className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-4 py-2 rounded-xl font-medium"
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                    >
-                                        Send Friend Request
-                                    </motion.button>
-                                )}
-                                {requestStatus === 'sent' && (
-                                    <motion.button
-                                        className="bg-gray-500 text-white px-4 py-2 rounded-xl font-medium opacity-50 cursor-not-allowed"
-                                        disabled
-                                    >
-                                        Request Sent
-                                    </motion.button>
-                                )}
-                                {requestStatus === 'received' && (
-                                    <motion.button
-                                        onClick={() => acceptFriendRequest(searchResult.id)}
-                                        className="bg-green-500 text-white px-4 py-2 rounded-xl font-medium"
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                    >
-                                        Accept Request
-                                    </motion.button>
-                                )}
-                                {requestStatus === 'friends' && (
-                                    <motion.button
-                                        className="bg-green-500 text-white px-4 py-2 rounded-xl font-medium opacity-50 cursor-not-allowed"
-                                        disabled
-                                    >
-                                        Friends
-                                    </motion.button>
-                                )}
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
         </div>
     );
 }

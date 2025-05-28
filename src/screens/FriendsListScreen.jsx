@@ -4,6 +4,7 @@ import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { getCurrentUser } from '../services/auth';
 import LoadingScreen from './LoadingScreen';
+import { IoArrowBack } from 'react-icons/io5';
 
 function FriendsListScreen({ setSelectedUserId, setScreen }) {
     const [friendsList, setFriendsList] = useState([]);
@@ -43,7 +44,7 @@ function FriendsListScreen({ setSelectedUserId, setScreen }) {
 
     const viewProfile = (userId) => {
         if (userId === currentUser.uid) {
-            setScreen三级('profile');
+            setScreen('profile');
         } else {
             setSelectedUserId(userId);
             setScreen('userProfile');
@@ -58,17 +59,25 @@ function FriendsListScreen({ setSelectedUserId, setScreen }) {
     );
 
     return (
-        <div className="flex flex-col items-center p-4 safe-area-inset-top min-h-screen bg-black">
-            <motion.h1
-                className="text-4xl font-bold mb-6 text-center"
+        <div className="flex flex-col items-center p-4 safe-area-inset-top min-h-screen bg-black pt-0">
+            <motion.div
+                className="fixed top-0 left-0 w-full bg-black z-10 pt-16"
                 initial={{ opacity: 0, y: -50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, type: "spring" }}
             >
-                Friends List <span className="text-blue-400">〜</span>
-            </motion.h1>
+                <div className="relative flex items-center justify-center">
+                    <IoArrowBack
+                        className="text-2xl text-white absolute left-16 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                        onClick={() => setScreen('home')}
+                    />
+                    <h1 className="text-4xl font-bold text-center">
+                        myfriends <span className="text-blue-400">〜</span>
+                    </h1>
+                </div>
+            </motion.div>
             <motion.div
-                className="w-full max-w-md bg-[#1a1a1a] p-4 rounded-xl border-4 border-white shadow-[0_0_10px_rgba(255,255,255,0.3)]"
+                className="w-full max-w-md p-4 pt-15"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
@@ -78,7 +87,7 @@ function FriendsListScreen({ setSelectedUserId, setScreen }) {
                         friendsList.map(friend => (
                             <motion.div
                                 key={friend.id}
-                                className="flex items-center p-2 bg-[#2a2a2a] rounded-xl mb-2"
+                                className="border-2 border-gray-600 p-2 rounded-xl mb-2 flex items-center"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -20 }}
@@ -111,14 +120,6 @@ function FriendsListScreen({ setSelectedUserId, setScreen }) {
                     )}
                 </AnimatePresence>
             </motion.div>
-            <motion.button
-                onClick={() => setScreen('profile')}
-                className="mt-4 bg-gray-700 text-white px-6 py-2 rounded-xl font-medium"
-                whileHover={{ scale: 1.05 }}
-                g               whileTap={{ scale: 0.95 }}
-            >
-                Back to Profile
-            </motion.button>
         </div>
     );
 }

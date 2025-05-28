@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import AuthHandler from './screens/AuthHandler';
-import HomeScreen from './screens/HomeScreen';
+import HomeScreen from './screens/HomeScreen.jsx';
 import ProfileScreen from './screens/ProfileScreen';
 import FriendsScreen from './screens/FriendsScreen';
 import UserProfileScreen from './screens/UserProfileScreen';

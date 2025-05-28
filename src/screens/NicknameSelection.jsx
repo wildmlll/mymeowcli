@@ -34,32 +34,22 @@ function NicknameSelection({ user, setScreen }) {
                 setIsChecking(true);
                 setError(null);
 
-                // Check network status
                 const networkStatus = await Network.getStatus();
                 if (!networkStatus.connected) {
                     throw new Error('No internet connection. Please check your network.');
                 }
 
-                // Verify authentication
                 const currentUser = await getCurrentUser();
                 if (!currentUser) throw new Error('User not authenticated.');
-                console.log('Authenticated user UID:', currentUser.uid); // Debug log for auth
 
                 const avatarRef = ref(storage, `avatars/${currentUser.uid}/profile.jpg`);
-                console.log('Starting upload for user:', currentUser.uid); // Debug log
                 const fileData = await new Promise((resolve) => {
                     const reader = new FileReader();
                     reader.onload = (e) => resolve(e.target.result);
                     reader.readAsArrayBuffer(avatar);
                 });
-                console.log('FileData length:', fileData.byteLength, 'Type:', avatar.type); // Debug log
                 const blob = new Blob([fileData], { type: avatar.type });
-                console.log('Blob size:', blob.size); // Debug log
-                console.log('Uploading to:', avatarRef.fullPath); // Debug log
-                const uploadTask = uploadBytes(avatarRef, blob);
-                console.log('Upload task initiated'); // Debug log
-                await uploadTask;
-                console.log('Upload completed'); // Debug log
+                await uploadBytes(avatarRef, blob);
                 const avatarUrl = await getDownloadURL(avatarRef);
                 await setDoc(doc(db, 'nicknames', nickname), { uid: currentUser.uid });
                 await setDoc(doc(db, 'users', currentUser.uid), {
@@ -71,8 +61,9 @@ function NicknameSelection({ user, setScreen }) {
                 }, { merge: true });
                 setScreen('home');
             } catch (err) {
-                console.error('Error saving nickname and avatar:', err, { file: avatar, fileDataLength: avatar ? avatar.size : null });
+                console.error('Error saving nickname and avatar:', err);
                 setError(`Failed to save nickname and avatar. ${err.message}. Check Firebase Storage rules or contact support if persistent.`);
+            } finally {
                 setIsChecking(false);
             }
         }
@@ -81,27 +72,25 @@ function NicknameSelection({ user, setScreen }) {
     if (isChecking) return <LoadingScreen />;
 
     return (
-        <div className="nickname-container">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-black pt-8">
             <motion.h1
-                className="nickname-heading"
+                className="text-4xl font-bold mb-6 text-center"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, type: "spring" }}
             >
-                Choose Nickname <span className="text-blue-400">〜</span>
+                mymeow <span className="text-blue-400">〜</span>
             </motion.h1>
             <input
                 type="text"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
-                className="nickname-input no-resize"
+                className="w-full max-w-md p-2 mb-4 rounded-xl bg-[#1a1a1a] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter nickname"
             />
             <motion.button
                 onClick={checkNickname}
-                className={`nickname-button nickname-button-primary mt-4 ${
-                    (isChecking || !nickname) && 'nickname-button-disabled'
-                }`}
+                className="w-full max-w-md bg-gradient-to-r from-blue-600 to-blue-400 text-white px-6 py-2 rounded-xl font-medium mb-4"
                 disabled={isChecking || !nickname}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -109,18 +98,17 @@ function NicknameSelection({ user, setScreen }) {
                 {isChecking ? 'Checking...' : 'Check Nickname'}
             </motion.button>
             {isAvailable === false && (
-                <motion.button
-                    className="nickname-button nickname-button-disabled mt-3"
-                    disabled
+                <motion.p
+                    className="text-red-500 mt-2"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
                 >
                     Nickname Taken
-                </motion.button>
+                </motion.p>
             )}
             {isAvailable === true && (
-                <div>
+                <div className="mt-4 flex flex-col items-center">
                     <input
                         type="file"
                         accept="image/jpeg,image/png,image/heif,image/heic"
@@ -134,15 +122,18 @@ function NicknameSelection({ user, setScreen }) {
                                 setError('Please select a valid image file (JPEG, PNG, HEIC, HEIF).');
                             }
                         }}
-                        className="mt-4"
+                        className="hidden"
+                        id="avatar-upload"
                     />
+                    <label htmlFor="avatar-upload" className="w-16 h-16 rounded-full bg-gray-600 flex items-center justify-center text-white cursor-pointer mb-4">
+                        {avatar ? '✓' : 'Upload Avatar'}
+                    </label>
                     <motion.button
                         onClick={saveNicknameAndAvatar}
-                        className="nickname-button nickname-button-success mt-3"
+                        className="w-full max-w-md bg-gradient-to-r from-green-500 to-green-400 text-white px-6 py-2 rounded-xl font-medium"
                         disabled={!avatar}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3 }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                     >
                         Save Nickname and Avatar
                     </motion.button>
@@ -150,7 +141,7 @@ function NicknameSelection({ user, setScreen }) {
             )}
             {error && (
                 <motion.p
-                    className="text-red-500 mt-4 text-center"
+                    className="text-red-500 mt-2 text-center"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}

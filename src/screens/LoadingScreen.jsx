@@ -16,7 +16,7 @@ function LoadingScreen() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, type: "spring" }}
             >
-                memeow
+                mymeow
             </motion.h1>
         </div>
     );

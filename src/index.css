@@ -110,6 +110,41 @@ a {
     animation: spin 1s linear infinite;
   }
 
+  .timer-circle-container {
+    @apply relative w-12 h-12;
+  }
+
+  .timer-circle-bg {
+    @apply absolute w-full h-full rounded-full border-2 border-gray-600;
+  }
+
+  .timer-circle-progress {
+    @apply absolute w-full h-full rounded-full border-2 border-blue-400;
+    clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%);
+    transform: rotate(0deg);
+    transform-origin: center;
+  }
+
+  .timer-text {
+    @apply absolute inset-0 flex items-center justify-center text-sm font-medium text-gray-400;
+  }
+
+  .note-container {
+    @apply mb-4 p-4 border-2 border-white rounded-xl;
+  }
+
+  .note-content {
+    @apply flex items-start;
+  }
+
+  .note-text {
+    @apply text-base text-left;
+  }
+
+  .note-nickname {
+    @apply text-sm text-gray-400 text-left cursor-pointer mt-1;
+  }
+
   @keyframes spin {
     from {
       transform: rotate(0deg);
@@ -145,3 +180,10 @@ a {
     @apply max-w-full px-4;
   }
 }
+
+  .notesfry{
+  margin-top: 1rem;
+  }
+  .ghjk{
+    margin-top: 5.1rem;
+  }
