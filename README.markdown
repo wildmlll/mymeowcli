@@ -99,10 +99,6 @@ Follow these steps to set up and run MyMeow locally.
 - **Web**: Run `npm run dev` and open `http://localhost:5173` in your browser.
 - **iOS/Android**: After building, use Xcode or Android Studio to deploy to a simulator or device.
 
-## 🤝 Contributing
-
-It is privat project. 
-
 ## 📄 License
 
 Copyright (c) 2025 Maksym Hanych
