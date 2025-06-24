@@ -1,22 +1,25 @@
 # MyMeow 🐾
 
 A vibrant social networking app built for iOS and Android using **Vite (React)** and **Capacitor**, powered by **Firebase**. MyMeow lets you share fleeting notes with friends that vanish after 6 hours, creating a fun and ephemeral way to stay connected.
+This pet project was made to learn and show my web development skills.
+Also you can test it on TestFlight external testing program:
+https://testflight.apple.com/join/NTT4fahX
 
 ## ✨ Features
 
 - **Ephemeral Notes**: Share thoughts, updates, or moments with your friends that disappear after 6 hours.
-- **Cross-Platform**: Seamlessly runs on both iOS and Android using Capacitor.
+- **Cross-Platform**: Seamlessly runs on both iOS and Android using Capacitor. (Android version is still not published)
 - **Real-Time Updates**: Powered by Firebase for instant syncing and reliable data storage.
 - **Modern Frontend**: Built with Vite and React for a fast, responsive, and delightful user experience.
 - **Social Connectivity**: Connect with friends, view their notes, and engage in a private, time-bound social space.
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Vite, React, Tailwind CSS
-- **Mobile Integration**: Capacitor for iOS and Android
-- **Backend**: Firebase (Firestore, Authentication, Storage)
-- **Language**: JavaScript/TypeScript
-- **Deployment**: Capacitor for native builds, Firebase Hosting (optional)
+- **Frontend**: Vite, React, Tailwind CSS, framer-motion
+- **Mobile Integration**: Capacitor for iOS and Android, revenuecat (for premium)
+- **Backend**: Firebase (Firestore, Authentication capacitor-firebase, Storage)
+- **Language**: JavaScript
+- **Deployment**: Capacitor for native builds 
 
 ## 🚀 Getting Started
 
@@ -24,7 +27,7 @@ Follow these steps to set up and run MyMeow locally.
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
+- Node.js (v18 or higher)
 - npm or Yarn
 - Firebase account and project setup
 - Capacitor CLI (`npm install -g @capacitor/cli`)
@@ -56,13 +59,19 @@ Follow these steps to set up and run MyMeow locally.
        appId: "your-app-id"
      };
      ```
+   - Set up firebase native app, add needed files (GoogleService-info.plist for IOS)
+   - Add database indexes:
+     Collection ID - statuses
+     Fields indexed: ownerId (Ascending), createdAt (Ascending), __name__ (Ascending)
+     Query scope - Collection
+   - Set up Apple development profile, Xcode, enable signin with Apple.
 
 4. **Run the development server**:
    ```bash
    npm run dev
    ```
 
-5. **Build for mobile**:
+5. **Build for native**:
    - Add platforms:
      ```bash
      npx cap add ios
@@ -92,15 +101,7 @@ Follow these steps to set up and run MyMeow locally.
 
 ## 🤝 Contributing
 
-We welcome contributions! To get started:
-
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature/your-feature`).
-3. Commit your changes (`git commit -m "Add your feature"`).
-4. Push to the branch (`git push origin feature/your-feature`).
-5. Open a Pull Request.
-
-Please follow our [Code of Conduct](CODE_OF_CONDUCT.md) and ensure your code adheres to the project's style guidelines.
+It is privat project. 
 
 ## 📄 License
 
