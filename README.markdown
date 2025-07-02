@@ -36,7 +36,7 @@ Follow these steps to set up and run MyMeow locally.
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/mymeow.git
+   git clone https://github.com/wildmlll/mymeowcli
    cd mymeow
    ```
 
